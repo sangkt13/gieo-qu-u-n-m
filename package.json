@@ -1,0 +1,17 @@
+{
+  "name": "gieo-que-ai-vercel",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Static PWA + Vercel Serverless Function for ChatGPT",
+  "license": "MIT",
+  "engines": {
+    "node": ">=18"
+  },
+  "dependencies": {
+    "openai": "^4.0.0"
+  },
+  "scripts": {
+    "dev": "vercel dev",
+    "start": "vercel dev"
+  }
+}

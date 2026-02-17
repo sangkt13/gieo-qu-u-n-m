@@ -1,0 +1,17 @@
+{
+  "name": "Gieo Quẻ Tài Lộc",
+  "short_name": "Gieo Quẻ Tài Lộc",
+  "start_url": "index.html",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#D32F2F",
+  "description": "Ứng dụng xin xăm mô phỏng ống trúc thực tế, tích hợp cảm biến rung lắc (Accelerometer) và hiệu ứng vật lý sinh động. Thiết kế Material Design với độ tương phản cao.",
+  "icons": [
+    {
+      "src": "https://cdn-icons-png.flaticon.com/512/258/258392.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ]
+}

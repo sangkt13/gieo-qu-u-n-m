@@ -1,0 +1,19 @@
+
+=== BẢN BUILD CHUYÊN NGHIỆP CHO ANDROID 16 (API 35) ===
+
+Chào bạn, đây là gói mã nguồn đã được tối ưu hóa cho Android đời mới nhất.
+
+CÁCH 1: CÀI ĐẶT TRỰC TIẾP (KHÔNG CẦN APK) - KHUYÊN DÙNG
+1. Upload thư mục này lên GitHub Pages.
+2. Mở URL bằng Chrome trên Android.
+3. Chrome sẽ hiện thông báo "Thêm vào màn hình chính" (Add to Home Screen).
+4. Nhấn OK. App sẽ xuất hiện trên màn hình điện thoại và chạy như một App thật 100%.
+
+CÁCH 2: TẠO FILE .APK ĐỂ GỬI QUA ZALO/TELEGRAM
+1. Truy cập https://www.pwabuilder.com/
+2. Dán URL GitHub của bạn vào.
+3. Nhấn "Build for Android". 
+4. Hệ thống PWABuilder sẽ dùng server chuyên dụng để biến mã nguồn này thành file .apk chính thức.
+
+LƯU Ý: Android 16 yêu cầu tính bảo mật rất cao, vì vậy App phải chạy qua HTTPS (GitHub Pages cung cấp sẵn) mới có thể cài đặt được.
+      

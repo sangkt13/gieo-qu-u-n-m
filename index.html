@@ -2,319 +2,360 @@
 <html lang="vi">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport"
-        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
   <title>Gieo Quẻ Tài Lộc</title>
-
   <!-- PWA -->
   <link rel="manifest" href="manifest.json" />
-  <meta name="theme-color" content="#D32F2F" />
-
-  <!-- Tailwind (CDN) -->
+  <meta name="theme-color" content="#9F1239" />
+  <!-- Tailwind + Confetti + Font đẹp -->
   <script src="https://cdn.tailwindcss.com"></script>
-
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&amp;family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
   <style>
-    body { margin: 0; padding: env(safe-area-inset-top) 0; background:#f5f5f5; }
-    .app-wrap { min-height: 100vh; display:flex; align-items:center; justify-content:center; padding: 18px; }
+    :root { --primary: #9F1239; }
+    body {
+      font-family: 'Inter', system-ui, sans-serif;
+      background: linear-gradient(135deg, #f8fafc 0%, #e0f2fe 100%);
+      margin: 0;
+      padding: env(safe-area-inset-top) 0;
+    }
+    .title-font { font-family: 'Playfair Display', serif; }
     .card {
-      width: 100%;
-      max-width: 460px;
-      border-radius: 22px;
-      overflow: hidden;
-      box-shadow: 0 18px 50px rgba(0,0,0,.25);
-      background: linear-gradient(135deg, #D32F2F 0%, #B71C1C 100%);
-      position: relative;
+      background: linear-gradient(135deg, #9F1239 0%, #4C1D95 100%);
+      box-shadow: 0 25px 50px -12px rgb(0 0 0 / 0.4);
+      border: 1px solid rgba(245, 158, 11, 0.3);
     }
-    .shine {
-      position:absolute; inset:-60px;
-      background: radial-gradient(circle at 20% 10%, rgba(255,255,255,.18), rgba(255,255,255,0) 55%);
-      pointer-events:none;
-    }
-
-    /* “Ống lộc” đơn giản + animation rung */
     .tube {
-      width: 150px; height: 250px;
-      border-radius: 14px 14px 48px 48px;
-      background: linear-gradient(90deg,#8D6E63 0%,#5D4037 25%,#4E342E 50%,#5D4037 75%,#8D6E63 100%);
-      border: 4px solid #3E2723;
-      box-shadow: inset 0 0 20px rgba(0,0,0,.6), 8px 10px 18px rgba(0,0,0,.25);
+      width: 168px; height: 280px;
+      background: linear-gradient(90deg, #78350f, #451a03, #78350f);
+      border-radius: 18px 18px 60px 60px;
+      border: 8px solid #3f2a1e;
+      box-shadow: inset 0 0 40px rgba(0,0,0,0.7), 0 20px 25px -5px rgb(0 0 0 / 0.3);
       position: relative;
-      display:flex; align-items:center; justify-content:center;
-      transform-origin: bottom center;
+      overflow: hidden;
     }
-    .tube::after{
-      content:"LỘC";
-      font-weight: 900;
-      font-size: 42px;
-      color:#FFC107;
-      border: 2px solid #FFC107;
-      padding: 10px 16px;
+    .tube::before {
+      content: '';
+      position: absolute;
+      inset: 12px;
+      border-radius: 10px;
+      background: radial-gradient(circle at 30% 20%, rgba(255,255,255,0.18), transparent 60%);
+    }
+    .stick {
+      position: absolute;
+      width: 6px;
+      background: linear-gradient(#f5e8c7, #d97706, #f5e8c7);
       border-radius: 999px;
-      background: rgba(183,28,28,.65);
-      text-shadow: 0 2px 6px rgba(0,0,0,.35);
+      box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.3);
+      transition: transform 0.3s ease;
     }
-    .shake { animation: shake 650ms ease-in-out 1; }
-    @keyframes shake {
-      0% { transform: rotate(0deg); }
-      15%{ transform: rotate(4deg); }
-      30%{ transform: rotate(-6deg); }
-      45%{ transform: rotate(6deg); }
-      60%{ transform: rotate(-4deg); }
-      75%{ transform: rotate(3deg); }
-      100%{ transform: rotate(0deg); }
+    .shaking .stick { animation: shakeStick 0.65s ease-in-out infinite; }
+    @keyframes shakeStick {
+      0%, 100% { transform: rotate(0deg) translateY(0); }
+      25% { transform: rotate(14deg) translateY(-10px); }
+      75% { transform: rotate(-14deg) translateY(8px); }
     }
-
-    /* Modal */
-    .overlay{
-      position: fixed; inset:0;
-      display:none; align-items:center; justify-content:center;
-      background: rgba(0,0,0,.78);
-      padding: 16px;
-      z-index: 9999;
+    .modal {
+      animation: modalPop 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
     }
-    .overlay.show{ display:flex; }
-    .modal{
-      width: 100%;
-      max-width: 420px;
-      background:#fff;
-      border-radius: 22px;
-      border: 5px solid #FFC107;
-      box-shadow: 0 20px 60px rgba(0,0,0,.5);
-      overflow:hidden;
+    @keyframes modalPop {
+      from { opacity: 0; transform: scale(0.75) translateY(50px); }
+      to { opacity: 1; transform: scale(1) translateY(0); }
     }
-    .modal-head{
-      background: linear-gradient(135deg, #fff7d1 0%, #fff 55%);
-      padding: 16px 18px;
-      border-bottom: 1px solid #f1f1f1;
-    }
-    .spinner{
-      width: 18px; height: 18px;
-      border-radius: 999px;
-      border: 3px solid rgba(0,0,0,.15);
-      border-top-color: rgba(0,0,0,.65);
-      animation: spin 0.8s linear infinite;
-      display:inline-block;
-      vertical-align: -3px;
-    }
-    @keyframes spin { to { transform: rotate(360deg); } }
-
-    textarea { resize: none; }
+    .result-number { font-size: 5.5rem; line-height: 1; font-weight: 900; }
   </style>
 </head>
-
-<body>
-  <div class="app-wrap">
-    <div class="card">
-      <div class="shine"></div>
-
-      <div class="p-5 text-center">
-        <h1 class="text-[26px] font-black tracking-wide text-[#FFC107] drop-shadow">GIEO QUẺ TÀI LỘC</h1>
-        <p class="text-white/90 text-sm mt-1">Lắc ống lộc và rút một quẻ may mắn</p>
+<body class="min-h-screen py-8">
+  <div class="max-w-[460px] mx-auto px-4">
+    <!-- Card chính -->
+    <div class="card rounded-3xl overflow-hidden text-white">
+      <div class="px-6 pt-9 pb-6 text-center">
+        <div class="flex items-center justify-center gap-3 mb-1">
+          <div class="w-10 h-10 bg-amber-400 text-[#9F1239] rounded-2xl flex items-center justify-center text-3xl">🪔</div>
+          <h1 class="title-font text-4xl font-bold tracking-tight">Gieo Quẻ</h1>
+        </div>
+        <p class="text-amber-200 text-lg">Tài Lộc • May Mắn • Hướng Dẫn</p>
       </div>
 
-      <div class="px-6 pb-6">
-        <div class="bg-white/10 rounded-2xl p-5">
-          <div class="flex items-center justify-center py-6">
-            <div id="tube" class="tube"></div>
+      <!-- Ống lộc -->
+      <div class="flex justify-center py-10 bg-white/10 mx-6 rounded-3xl">
+        <div id="tube" class="tube flex items-center justify-center">
+          <div id="sticks" class="absolute inset-x-4 top-14 flex justify-center gap-1"></div>
+          <div class="text-center z-10">
+            <div class="text-[46px] leading-none font-black text-amber-300 tracking-widest">LỘC</div>
           </div>
-
-          <div class="flex flex-col gap-3">
-            <button id="btnDraw"
-              class="w-full rounded-xl bg-[#FFC107] text-black font-bold py-3 shadow hover:brightness-95 active:scale-[0.99] transition">
-              Gieo quẻ ngay
-            </button>
-
-            <div class="text-xs text-white/80 text-center">
-              Mẹo: bạn có thể hỏi AI “quẻ này hợp với công việc / tài lộc / tình cảm không?”
-            </div>
-          </div>
-        </div>
-
-        <div class="mt-4 text-center text-white/80 text-xs">
-          PWA: có thể “Add to Home Screen” để dùng như app.
         </div>
       </div>
+
+      <div class="px-6 pb-10">
+        <button id="btnDraw"
+          class="w-full bg-gradient-to-r from-amber-400 to-yellow-300 hover:from-amber-300 hover:to-yellow-200 text-[#9F1239] font-bold text-xl py-4.5 rounded-2xl shadow-lg active:scale-[0.97] transition-all flex items-center justify-center gap-3">
+          <span class="text-2xl">🎋</span>
+          <span>LẮC ỐNG GIEO QUẺ</span>
+        </button>
+        <p class="text-center text-white/70 text-sm mt-6">Chạm nút hoặc lắc điện thoại để bắt đầu</p>
+      </div>
+    </div>
+
+    <!-- Lịch sử -->
+    <div id="historySection" class="mt-8 hidden">
+      <div class="flex items-center justify-between mb-3 px-1">
+        <h3 class="font-semibold text-gray-700">Quẻ gần đây</h3>
+        <span id="historyCount" class="text-xs bg-white/70 text-gray-600 px-2.5 py-0.5 rounded-full"></span>
+      </div>
+      <div id="historyList" class="space-y-3"></div>
     </div>
   </div>
 
   <!-- MODAL -->
-  <div id="overlay" class="overlay" role="dialog" aria-modal="true" aria-hidden="true">
-    <div class="modal">
-      <div class="modal-head">
-        <div class="flex items-start justify-between gap-3">
+  <div id="overlay" class="fixed inset-0 bg-black/75 hidden items-center justify-center z-50 p-4">
+    <div id="modal" class="modal bg-white rounded-3xl max-w-md w-full overflow-hidden shadow-2xl">
+      <!-- Header -->
+      <div class="bg-gradient-to-r from-[#9F1239] to-violet-700 text-white px-6 py-6">
+        <div class="flex justify-between">
           <div>
-            <div class="text-[#D32F2F] font-black text-xl">Kết quả gieo quẻ</div>
-            <div class="text-sm text-gray-600 mt-0.5">Bạn có thể nhờ AI diễn giải theo bối cảnh.</div>
+            <div class="uppercase tracking-widest text-amber-300 text-xs font-medium">Kết quả</div>
+            <div id="resultName" class="title-font text-3xl font-bold mt-1"></div>
           </div>
-          <button id="btnClose"
-            class="shrink-0 rounded-lg px-3 py-2 bg-black/5 hover:bg-black/10 text-sm font-semibold">
-            Đóng
-          </button>
+          <button id="btnClose" class="text-4xl leading-none hover:bg-white/20 w-10 h-10 flex items-center justify-center rounded-full transition">×</button>
         </div>
       </div>
 
-      <div class="p-4">
-        <div class="rounded-2xl bg-gray-50 border p-4 text-center">
-          <div class="text-sm text-gray-600">Số quẻ</div>
-          <div id="resultNumber" class="text-5xl font-black text-gray-900 mt-1">--</div>
-          <div id="resultText" class="text-sm text-gray-700 mt-3">
-            (Mô tả ngắn sẽ hiển thị ở đây)
-          </div>
+      <div class="p-6">
+        <div class="flex justify-center -mt-8 mb-4">
+          <div id="resultBadge" class="px-6 py-2 text-lg font-bold rounded-full shadow-md"></div>
         </div>
 
-        <!-- AI BOX -->
-        <div class="mt-4 rounded-2xl border p-4">
-          <div class="flex items-center justify-between">
-            <div class="font-bold text-gray-900">Giải thích bằng AI</div>
-            <div id="aiStatus" class="text-xs text-gray-500"></div>
+        <div id="resultNumber" class="result-number text-center text-gray-900"></div>
+        <div id="resultMeaning" class="text-gray-600 text-[15.5px] leading-relaxed text-center mt-3 min-h-[72px]"></div>
+
+        <!-- AI -->
+        <div class="mt-10 border-t pt-6">
+          <div class="font-semibold text-gray-800 mb-3 flex items-center gap-2">
+            <span>✨</span> Hỏi AI về quẻ này
           </div>
-
-          <label class="block text-sm text-gray-600 mt-3 mb-2">
-            Bạn muốn hỏi gì về quẻ này?
-          </label>
-          <textarea id="aiQuestion"
-            class="w-full rounded-xl border p-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#FFC107]"
-            rows="3"
-            placeholder="Ví dụ: Quẻ này báo hiệu gì cho công việc 3 tháng tới?"></textarea>
-
-          <button id="btnAskAI"
-            class="mt-3 w-full rounded-xl bg-[#D32F2F] text-white font-bold py-3 hover:brightness-95 active:scale-[0.99] transition">
-            Hỏi AI
-          </button>
-
-          <div id="aiAnswerBox" class="mt-3 hidden">
-            <div class="rounded-xl bg-gray-50 border p-3 text-sm text-gray-800 whitespace-pre-wrap" id="aiAnswer"></div>
+          <textarea id="aiQuestion" rows="3" class="w-full border border-gray-200 focus:border-amber-400 rounded-2xl p-4 text-sm resize-none focus:outline-none" placeholder="Ví dụ: Quẻ này hợp với công việc tháng này không?"></textarea>
+          <button id="btnAskAI" class="mt-4 w-full bg-[#9F1239] hover:bg-[#881337] text-white font-semibold py-3.5 rounded-2xl transition">Hỏi AI Diễn Giải</button>
+          
+          <div id="aiAnswerBox" class="hidden mt-6">
+            <div class="text-xs text-gray-500 mb-2">TRẢ LỜI TỪ AI</div>
+            <div id="aiAnswer" class="bg-amber-50 border border-amber-100 rounded-2xl p-5 text-sm leading-relaxed whitespace-pre-wrap"></div>
           </div>
         </div>
+      </div>
+
+      <div class="border-t flex gap-3 p-4">
+        <button id="btnDrawAgain" class="flex-1 py-3.5 text-gray-700 font-medium border border-gray-300 rounded-2xl hover:bg-gray-50 transition">Gieo quẻ khác</button>
+        <button id="btnShare" class="flex-1 py-3.5 font-medium bg-gray-900 text-white rounded-2xl hover:bg-black transition">Chia sẻ</button>
       </div>
     </div>
   </div>
 
   <script>
-    // ====== SIMPLE “GIEO QUẺ” LOGIC (demo) ======
-    const tube = document.getElementById("tube");
-    const btnDraw = document.getElementById("btnDraw");
-    const overlay = document.getElementById("overlay");
-    const btnClose = document.getElementById("btnClose");
-    const resultNumber = document.getElementById("resultNumber");
-    const resultText = document.getElementById("resultText");
+    // ================== DATA 64 QUẺ (mẫu + fallback) ==================
+    const queDatabase = {
+      1: { name: "Càn Vi Thiên", meaning: "Sức mạnh sáng tạo, khí thế ngút trời. Đại cát lớn.", type: "ĐẠI CÁT", color: "emerald" },
+      2: { name: "Khôn Vi Địa", meaning: "Kiên nhẫn, bao dung, tích đức sẽ được báo đáp.", type: "CÁT", color: "emerald" },
+      11: { name: "Thái", meaning: "Thịnh vượng, thông suốt, thời cơ vàng.", type: "ĐẠI CÁT", color: "emerald" },
+      12: { name: "Bĩ", meaning: "Bế tắc tạm thời, cần kiên trì quan sát.", type: "CẨN TRỌNG", color: "amber" },
+      43: { name: "Quải", meaning: "Quyết đoán loại bỏ điều xấu, thành công lớn.", type: "CÁT", color: "emerald" },
+      // Thêm thoải mái... (bạn có thể bổ sung từ Kinh Dịch)
+    };
 
-    // AI elements
-    const btnAskAI = document.getElementById("btnAskAI");
-    const aiQuestion = document.getElementById("aiQuestion");
-    const aiAnswerBox = document.getElementById("aiAnswerBox");
-    const aiAnswer = document.getElementById("aiAnswer");
-    const aiStatus = document.getElementById("aiStatus");
-
-    // Bạn có thể thay bằng nội dung quẻ thật của bạn
-    const shortMeanings = [
-      "Cát: Có tín hiệu tốt, nên chủ động nắm cơ hội.",
-      "Bình: Tiến chậm mà chắc, ưu tiên ổn định.",
-      "Hung: Tránh vội vàng, rà soát rủi ro trước khi quyết.",
-      "Cát: Quý nhân phù trợ, thuận lợi khi hợp tác.",
-      "Bình: Chờ thời, tích lũy nguồn lực.",
-      "Cát: Tài lộc có thể đến từ kênh mới / ý tưởng mới."
-    ];
-
-    function randomInt(min, max){
-      return Math.floor(Math.random() * (max - min + 1)) + min;
+    function getQueInfo(n) {
+      if (queDatabase[n]) return queDatabase[n];
+      const types = [
+        {t: "ĐẠI CÁT", c: "emerald"},
+        {t: "CÁT", c: "emerald"},
+        {t: "BÌNH AN", c: "amber"},
+        {t: "CẨN TRỌNG", c: "orange"}
+      ];
+      const pick = types[Math.floor(Math.random() * types.length)];
+      return {
+        name: `Quẻ ${n}`,
+        meaning: "Thời vận đang chuyển biến tích cực. Hãy giữ tâm bình an và hành động đúng lúc.",
+        type: pick.t,
+        color: pick.c
+      };
     }
 
-    function openModal(){
-      overlay.classList.add("show");
-      overlay.setAttribute("aria-hidden", "false");
+    // ================== DOM & VARIABLES ==================
+    const tube = document.getElementById('tube');
+    const btnDraw = document.getElementById('btnDraw');
+    const overlay = document.getElementById('overlay');
+    const btnClose = document.getElementById('btnClose');
+    const btnDrawAgain = document.getElementById('btnDrawAgain');
+    const btnShare = document.getElementById('btnShare');
+
+    const resultNumber = document.getElementById('resultNumber');
+    const resultName = document.getElementById('resultName');
+    const resultMeaning = document.getElementById('resultMeaning');
+    const resultBadge = document.getElementById('resultBadge');
+
+    const aiQuestion = document.getElementById('aiQuestion');
+    const btnAskAI = document.getElementById('btnAskAI');
+    const aiAnswerBox = document.getElementById('aiAnswerBox');
+    const aiAnswer = document.getElementById('aiAnswer');
+
+    let currentQue = null;
+
+    // ================== TẠO QUE XĂM ==================
+    function createSticks() {
+      const container = document.getElementById('sticks');
+      container.innerHTML = '';
+      for (let i = 0; i < 7; i++) {
+        const s = document.createElement('div');
+        s.className = 'stick';
+        s.style.height = `${160 + Math.random() * 35}px`;
+        s.style.transform = `rotate(${-22 + Math.random() * 44}deg)`;
+        s.style.left = `${28 + i * 7}%`;
+        container.appendChild(s);
+      }
     }
 
-    function closeModal(){
-      overlay.classList.remove("show");
-      overlay.setAttribute("aria-hidden", "true");
+    function shake() {
+      tube.classList.add('shaking');
+      if ('vibrate' in navigator) navigator.vibrate([80, 40, 120]);
+      setTimeout(() => tube.classList.remove('shaking'), 900);
     }
 
-    btnClose.addEventListener("click", closeModal);
-    overlay.addEventListener("click", (e) => {
-      if (e.target === overlay) closeModal();
+    // ================== MODAL ==================
+    function openModal(que) {
+      currentQue = que;
+      resultNumber.textContent = que.id || que.number || que.num;
+      resultName.textContent = que.name;
+      resultMeaning.textContent = que.meaning;
+      
+      resultBadge.textContent = que.type;
+      resultBadge.className = `px-6 py-2 text-lg font-bold rounded-full shadow-md bg-${que.color}-500 text-white`;
+
+      // Confetti khi Đại Cát
+      if (que.type === "ĐẠI CÁT") {
+        confetti({ particleCount: 200, spread: 80, origin: { y: 0.6 } });
+      }
+
+      overlay.classList.remove('hidden');
+      overlay.classList.add('flex');
+      aiQuestion.value = '';
+      aiAnswerBox.classList.add('hidden');
+    }
+
+    function closeModal() {
+      overlay.classList.add('hidden');
+      overlay.classList.remove('flex');
+    }
+
+    // ================== GIEO QUẺ ==================
+    btnDraw.addEventListener('click', () => {
+      shake();
+      setTimeout(() => {
+        const n = Math.floor(Math.random() * 64) + 1;
+        const info = getQueInfo(n);
+        const que = { ...info, num: n };
+        openModal(que);
+        saveToHistory(que);
+      }, 700);
     });
 
-    btnDraw.addEventListener("click", () => {
-      tube.classList.remove("shake");
-      void tube.offsetWidth; // reflow
-      tube.classList.add("shake");
+    btnClose.addEventListener('click', closeModal);
+    btnDrawAgain.addEventListener('click', () => { closeModal(); setTimeout(() => btnDraw.click(), 380); });
 
-      const n = randomInt(1, 64); // ví dụ 1-64
-      const meaning = shortMeanings[randomInt(0, shortMeanings.length - 1)];
+    // ================== LỊCH SỬ ==================
+    function saveToHistory(que) {
+      let hist = JSON.parse(localStorage.getItem('queHistory') || '[]');
+      hist.unshift(que);
+      if (hist.length > 6) hist.pop();
+      localStorage.setItem('queHistory', JSON.stringify(hist));
+      renderHistory();
+    }
 
-      resultNumber.textContent = String(n);
-      resultText.textContent = meaning;
+    function renderHistory() {
+      const hist = JSON.parse(localStorage.getItem('queHistory') || '[]');
+      const section = document.getElementById('historySection');
+      const list = document.getElementById('historyList');
+      const count = document.getElementById('historyCount');
 
-      // reset AI box mỗi lần gieo
-      aiQuestion.value = "";
-      aiAnswer.textContent = "";
-      aiAnswerBox.classList.add("hidden");
-      aiStatus.textContent = "";
+      if (hist.length === 0) {
+        section.classList.add('hidden');
+        return;
+      }
+      section.classList.remove('hidden');
+      count.textContent = hist.length + '/6';
 
-      openModal();
-    });
+      list.innerHTML = hist.map(q => `
+        <div onclick="loadOldQue(${q.num})" class="bg-white rounded-2xl p-4 shadow-sm cursor-pointer hover:shadow transition flex justify-between items-center">
+          <div>
+            <span class="font-semibold text-gray-900">Quẻ ${q.num}</span>
+            <p class="text-xs text-gray-500 mt-0.5">${q.name}</p>
+          </div>
+          <span class="text-xs px-3 py-1 rounded-full bg-${q.color}-100 text-${q.color}-700 font-medium">${q.type}</span>
+        </div>
+      `).join('');
+    }
 
-    // ====== CHATGPT INTEGRATION (CALL /api/chat) ======
-    async function askAI(message){
-      const r = await fetch("/api/chat", {
+    window.loadOldQue = function(n) {
+      const info = getQueInfo(n);
+      openModal({ ...info, num: n });
+    };
+
+    // ================== AI ==================
+    async function askAI(message) {
+      const res = await fetch("/api/chat", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ message })
       });
-
-      const data = await r.json().catch(() => ({}));
-      if (!r.ok) {
-        throw new Error(data?.error || "Request failed");
-      }
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) throw new Error(data.error || "Lỗi kết nối");
       return data.text || "";
     }
 
-    btnAskAI.addEventListener("click", async () => {
+    btnAskAI.addEventListener('click', async () => {
       const q = aiQuestion.value.trim();
-      const n = resultNumber.textContent.trim();
-
-      if (!n || n === "--") return;
-      if (!q) {
-        aiQuestion.focus();
-        return;
-      }
+      if (!q || !currentQue) return;
 
       btnAskAI.disabled = true;
-      aiStatus.innerHTML = '<span class="spinner"></span> Đang hỏi AI...';
+      btnAskAI.innerHTML = `<span class="inline-block w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin mr-2"></span>Đang hỏi AI...`;
 
-      try{
-        const prompt =
-`Bạn là trợ lý tiếng Việt.
-Nhiệm vụ: diễn giải "quẻ gieo" theo hướng thực tế, ngắn gọn, dễ hiểu.
-- Đưa ra 5-8 dòng.
-- Có cảnh báo rủi ro (nếu có).
-- Có 3 gợi ý hành động cụ thể.
-Thông tin:
-- Số quẻ: ${n}
-- Mô tả ngắn: ${resultText.textContent}
-- Câu hỏi người dùng: ${q}`;
+      try {
+        const prompt = `Bạn là thầy bói tài lộc tiếng Việt, chuyên nghiệp, gần gũi.
+Nhiệm vụ: diễn giải quẻ theo góc nhìn thực tế, tích cực, ngắn gọn 6-9 dòng.
+- Nhấn mạnh tài lộc, công việc, tình cảm nếu phù hợp.
+- Đưa ra 3 lời khuyên cụ thể.
+Thông tin quẻ:
+Số: ${currentQue.num} - ${currentQue.name}
+Mô tả: ${currentQue.meaning}
+Câu hỏi người dùng: ${q}`;
 
         const text = await askAI(prompt);
-
-        aiAnswer.textContent = text || "(AI không trả về nội dung)";
-        aiAnswerBox.classList.remove("hidden");
-        aiStatus.textContent = "Xong ✅";
-      } catch(err){
-        aiAnswer.textContent = "Lỗi: " + (err?.message || String(err));
-        aiAnswerBox.classList.remove("hidden");
-        aiStatus.textContent = "Có lỗi ❌";
-      } finally{
+        aiAnswer.textContent = text || "AI chưa trả lời được lúc này.";
+        aiAnswerBox.classList.remove('hidden');
+      } catch (e) {
+        aiAnswer.textContent = "❌ Lỗi kết nối AI. Vui lòng thử lại.";
+        aiAnswerBox.classList.remove('hidden');
+      } finally {
         btnAskAI.disabled = false;
+        btnAskAI.textContent = "Hỏi AI Diễn Giải";
       }
     });
 
-    // ====== (Optional) Service Worker registration nếu bạn có sw.js ======
-    // if ("serviceWorker" in navigator) {
-    //   window.addEventListener("load", () => {
-    //     navigator.serviceWorker.register("/sw.js").catch(() => {});
-    //   });
-    // }
+    // ================== SHARE ==================
+    btnShare.addEventListener('click', async () => {
+      const text = `🪔 Quẻ của tôi hôm nay:\nQuẻ ${currentQue.num} - ${currentQue.name}\n${currentQue.meaning}\n\nThử gieo quẻ tài lộc ngay!`;
+      if (navigator.share) {
+        await navigator.share({ title: "Gieo Quẻ Tài Lộc", text });
+      } else {
+        navigator.clipboard.writeText(text);
+        alert("Đã copy kết quả vào clipboard ✅");
+      }
+    });
+
+    // ================== INIT ==================
+    createSticks();
+    renderHistory();
+
+    // Tailwind script chạy
+    document.documentElement.style.setProperty('--tw-ring-color', '#9F1239');
   </script>
 </body>
 </html>
